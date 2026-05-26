@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 import streamlit as st
 
 class DatabaseManager:
-def __init__(self):
+    def __init__(self):
         raw_url = st.secrets.get("database", {}).get("DATABASE_URL") or os.getenv("DATABASE_URL")
         if not raw_url:
             raise ValueError("CRITICAL ERROR: DATABASE_URL configuration missing.")
@@ -44,7 +44,8 @@ def __init__(self):
                 })
 
     def save_52w_highs(self, df: pd.DataFrame):
-        if df.empty: return
+        if df.empty: 
+            return
         self.upsert_stocks_master(df)
         query = """
         INSERT INTO daily_52week_high (symbol, current_price, snapshot_date)
@@ -60,7 +61,8 @@ def __init__(self):
                 })
 
     def save_most_active(self, df: pd.DataFrame):
-        if df.empty: return
+        if df.empty: 
+            return
         self.upsert_stocks_master(df)
         query = """
         INSERT INTO daily_most_active (symbol, volume, turnover_crores, snapshot_date)
