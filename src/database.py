@@ -9,13 +9,13 @@ class DatabaseManager:
         if not raw_url:
             raise ValueError("CRITICAL ERROR: DATABASE_URL configuration missing.")
         
-        # Enforce pg8000 driver dialect matching for serverless containers
-        if raw_url.startswith("postgresql://"):
-            self.db_url = raw_url.replace("postgresql://", "postgresql+pg8000://", 1)
+        # Enforce standard postgresql dialect string
+        if raw_url.startswith("postgresql+pg8000://"):
+            self.db_url = raw_url.replace("postgresql+pg8000://", "postgresql://", 1)
         else:
             self.db_url = raw_url
-            
-        # Configure connection pool optimizations for Serverless Cloud Run
+
+        # Configure connection pool optimizations using standard psycopg2 settings
         self.engine = create_engine(
             self.db_url,
             pool_size=5,
