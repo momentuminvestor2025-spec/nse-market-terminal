@@ -4,11 +4,17 @@ from sqlalchemy import create_engine, text
 import streamlit as st
 
 class DatabaseManager:
-    def __init__(self):
-        # Fetches connection string from Streamlit Secrets or Environment Variable
-        self.db_url = st.secrets.get("database", {}).get("DATABASE_URL") or os.getenv("DATABASE_URL")
-        if not self.db_url:
+def __init__(self):
+        raw_url = st.secrets.get("database", {}).get("DATABASE_URL") or os.getenv("DATABASE_URL")
+        if not raw_url:
             raise ValueError("CRITICAL ERROR: DATABASE_URL configuration missing.")
+        
+        # Enforce pg8000 driver dialect matching for serverless containers
+        if raw_url.startswith("postgresql://"):
+            self.db_url = raw_url.replace("postgresql://", "postgresql+pg8000://", 1)
+        else:
+            self.db_url = raw_url
+            
         # Configure connection pool optimizations for Serverless Cloud Run
         self.engine = create_engine(
             self.db_url,
